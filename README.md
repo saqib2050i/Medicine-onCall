@@ -102,6 +102,22 @@ The password is entered interactively (hidden). `/data` must be a **persistent
 volume** — it holds the users file and the session signing key; losing it logs
 everyone out and deletes all accounts.
 
+**Seed the first user without `docker exec`.** Set these in the environment (or
+`.env`) and the user is created on first start — only if it doesn't already
+exist, so restarts never reset it:
+
+```ini
+ONCALL_ADMIN_USER=alice
+ONCALL_ADMIN_PASSWORD=your-strong-password   # min 10 chars
+```
+
+Or point at a file / Docker secret instead of an inline value:
+`ONCALL_ADMIN_PASSWORD_FILE=/run/secrets/oncall_admin_pw`. Changing an existing
+user's password is done with `manage-users.py passwd` — editing these env vars
+does **not** update an account that already exists. Because the value sits in
+your `.env` (gitignored), keep that file private; you can blank
+`ONCALL_ADMIN_PASSWORD` after the first successful boot.
+
 > This is a lightweight, standards-based auth service suitable for a small
 > trusted team behind your tunnel. For a larger deployment or stricter
 > assurance, a vetted identity provider (Authelia, Cloudflare Access) in front

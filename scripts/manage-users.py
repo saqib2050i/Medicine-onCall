@@ -95,6 +95,21 @@ def cmd_add(args, update_ok):
     print("%s user '%s'" % ("updated" if exists else "created", args.username))
 
 
+def cmd_ensure(args):
+    """Create the user only if it does not already exist (idempotent). Used to
+    seed an initial account from env vars at container start without ever
+    resetting a password that was later changed via 'passwd'."""
+    if not USERNAME_RE.match(args.username):
+        sys.exit("error: username must be 1-64 chars of letters, digits, . _ -")
+    users = load()
+    if args.username in users:
+        print("user '%s' already exists — leaving it unchanged" % args.username)
+        return
+    users[args.username] = hash_password(read_new_password())
+    save(users)
+    print("created user '%s'" % args.username)
+
+
 def cmd_remove(args):
     users = load()
     if args.username not in users:
@@ -118,6 +133,8 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     a = sub.add_parser("add", help="create a new user")
     a.add_argument("username")
+    e = sub.add_parser("ensure", help="create a user only if it does not exist (idempotent)")
+    e.add_argument("username")
     p = sub.add_parser("passwd", help="change an existing user's password")
     p.add_argument("username")
     r = sub.add_parser("remove", help="delete a user")
@@ -127,6 +144,8 @@ def main():
 
     if args.cmd == "add":
         cmd_add(args, update_ok=False)
+    elif args.cmd == "ensure":
+        cmd_ensure(args)
     elif args.cmd == "passwd":
         cmd_add(args, update_ok=True)
     elif args.cmd == "remove":
