@@ -35,16 +35,28 @@
   });
 
   // ---------------------------------------------------------------- data
+  // If the session has expired, gated fetches come back 401 — bounce the whole
+  // app to the login page, preserving where the user was.
+  function toLogin() {
+    var next = encodeURIComponent(location.pathname + location.search);
+    location.href = '/login?next=' + next;
+  }
+
+  function fetchJSON(url) {
+    return fetch(url, { cache: 'no-cache' }).then(function (r) {
+      if (r.status === 401) { toLogin(); throw new Error('unauthorized'); }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
   function loadManifest() {
-    return fetch('/manifest.json', { cache: 'no-cache' })
-      .then(function (r) { if (!r.ok) throw new Error('manifest HTTP ' + r.status); return r.json(); })
-      .then(function (m) { App.manifest = m; return m; });
+    return fetchJSON('/manifest.json').then(function (m) { App.manifest = m; return m; });
   }
 
   function loadTopic(id) {
     if (App.topicCache[id]) return Promise.resolve(App.topicCache[id]);
-    return fetch('/content/' + encodeURIComponent(id) + '.json', { cache: 'no-cache' })
-      .then(function (r) { if (!r.ok) throw new Error('topic HTTP ' + r.status); return r.json(); })
+    return fetchJSON('/content/' + encodeURIComponent(id) + '.json')
       .then(function (t) { App.topicCache[id] = t; return t; });
   }
 
@@ -57,7 +69,10 @@
   App.navigate = navigate;
 
   document.addEventListener('click', function (e) {
-    var a = e.target.closest ? e.target.closest('a[data-link]') : null;
+    if (!e.target.closest) return;
+    // Print button (no inline handler, so the strict CSP can forbid inline JS).
+    if (e.target.closest('.print-btn')) { window.print(); return; }
+    var a = e.target.closest('a[data-link]');
     if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     closeDrawer();

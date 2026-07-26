@@ -129,7 +129,7 @@
       '<h1 class="topic-title">' + esc(topic.title) + '</h1>' +
       severityBadge(topic.severity) +
       (opts.printButton === false ? '' :
-        '<button type="button" class="btn btn-ghost print-btn" onclick="window.print()" aria-label="Print this topic">&#128424; Print</button>') +
+        '<button type="button" class="btn btn-ghost print-btn" aria-label="Print this topic">&#128424; Print</button>') +
       '</div>' +
       '<p class="topic-summary">' + esc(topic.summary) + '</p>' +
       '<div class="topic-meta">' +

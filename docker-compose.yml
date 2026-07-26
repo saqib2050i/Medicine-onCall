@@ -7,11 +7,23 @@ services:
     container_name: ${CONTAINER_NAME:-oncall-guide}
     ports:
       - "${HOST_PORT:-8095}:80"           # NGINX Proxy Manager / Cloudflare Tunnel point here
+    environment:
+      # Signing key for session cookies. Optional: if left blank, a random key
+      # is generated and persisted to the data volume (so sessions still survive
+      # restarts). Set it to keep sessions stable across volume moves/replicas.
+      # Generate with: openssl rand -base64 48
+      - SESSION_SECRET=${SESSION_SECRET:-}
+      - SESSION_TTL_HOURS=${SESSION_TTL_HOURS:-12}
+      # Set to "true" to serve ONLY mounted content (ignore the baked seeds).
+      - ONCALL_DISABLE_SEEDS=${ONCALL_DISABLE_SEEDS:-false}
     volumes:
       # Optional — the image ships with seed content baked in. Drop extra
       # topic JSON files in CONTENT_DIR, then restart the container to index them.
       - ${CONTENT_DIR:-/mnt/user/appdata/oncall-guide/content}:/content:rw
-    environment:
-      # Set to "true" to serve ONLY mounted content (ignore the baked seeds).
-      - ONCALL_DISABLE_SEEDS=${ONCALL_DISABLE_SEEDS:-false}
+      # Login users + the session signing key live here. KEEP THIS PERSISTENT
+      # or everyone is logged out and all accounts are lost on redeploy.
+      - ${DATA_DIR:-/mnt/user/appdata/oncall-guide/data}:/data:rw
     restart: ${RESTART_POLICY:-unless-stopped}
+
+# First run — create your login user (no accounts exist until you do):
+#   docker exec -it oncall-guide python3 /app/manage-users.py add <username>

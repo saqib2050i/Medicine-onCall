@@ -61,6 +61,52 @@ Set `ONCALL_DISABLE_SEEDS=true` on the container to serve *only* mounted content
 - **Print stylesheet** — the Print button on a topic produces a clean
   single-topic flow sheet.
 
+## Security & authentication
+
+Login is enforced **in front of the static files**, by an auth service inside
+the container that nginx consults on every request (`auth_request`). Requests
+without a valid session get 401 — so fetching `/manifest.json` or
+`/content/<id>.json` directly returns nothing. (A login implemented only in
+client-side JS would be bypassable; this is not.)
+
+- **Passwords** are stored only as PBKDF2-HMAC-SHA256 hashes (600k iterations,
+  per-user salt) in `/data/users.json` — never plaintext, never in the image.
+  Manage them with `scripts/manage-users.py` (see below).
+- **Sessions** are HMAC-SHA256-signed tokens in an HttpOnly + Secure +
+  SameSite=Lax cookie with an expiry (`SESSION_TTL_HOURS`, default 12). Stateless,
+  so no session store; a forged/tampered cookie fails the signature check.
+- **Login is rate-limited** per username and per client IP (lockout after
+  repeated failures), with constant-time comparisons and generic error text.
+- **Logout** clears the cookie *and* purges the offline cache + service worker,
+  so previously viewed topics aren't readable after signing out.
+- **Hardening headers** on every response: a strict Content-Security-Policy
+  (`script-src 'self'` — blocks injected/inline JS, including inside a topic's
+  `html` block), plus `nosniff`, `frame-ancestors 'none'`, `Referrer-Policy`,
+  `Permissions-Policy` and COOP/CORP.
+
+Only `/login`, its script, the `/auth/*` endpoints and `/healthz` are public.
+
+### Managing users
+
+No accounts exist until you create one. Run the CLI inside the container (where
+the `/data` volume is mounted):
+
+```bash
+docker exec -it oncall-guide python3 /app/manage-users.py add alice     # create
+docker exec -it oncall-guide python3 /app/manage-users.py passwd alice  # change password
+docker exec -it oncall-guide python3 /app/manage-users.py list          # list usernames
+docker exec -it oncall-guide python3 /app/manage-users.py remove alice  # delete
+```
+
+The password is entered interactively (hidden). `/data` must be a **persistent
+volume** — it holds the users file and the session signing key; losing it logs
+everyone out and deletes all accounts.
+
+> This is a lightweight, standards-based auth service suitable for a small
+> trusted team behind your tunnel. For a larger deployment or stricter
+> assurance, a vetted identity provider (Authelia, Cloudflare Access) in front
+> is still the gold standard.
+
 ## Local development
 
 Requires only Python 3 (standard library):
@@ -70,13 +116,17 @@ python3 scripts/dev.py 8080
 ```
 
 This rebuilds the index from `content/` and serves `public/` at
-`http://localhost:8080` with the same SPA fallback nginx uses.
+`http://localhost:8080` with the same SPA fallback nginx uses. Note: `dev.py`
+serves the UI **unauthenticated** — it's for front-end work only. The real
+login gate (`auth_request` + the auth service) is exercised in the container.
 
-Or run the real container:
+Or run the real container (with auth), creating a data volume and a first user:
 
 ```bash
 docker build -t oncall-guide .
-docker run --rm -p 8095:80 oncall-guide
+docker run -d --name oncall-guide -p 8095:80 -v oncall-data:/data oncall-guide
+docker exec -it oncall-guide python3 /app/manage-users.py add alice
+# then open http://localhost:8095 — you'll be redirected to /login
 ```
 
 ## Content schema
@@ -156,7 +206,7 @@ directory, so you don't edit the compose file itself.
 
 1. Copy `.env.example` to `.env` and set at least `IMAGE` to your GHCR path
    (lowercase), e.g. `IMAGE=ghcr.io/drawesome2050/medicine-oncall`. The other
-   values (`HOST_PORT`, `CONTENT_DIR`, `IMAGE_TAG`, …) have sensible defaults.
+   values have sensible defaults.
 
    | Variable | Default | Purpose |
    |----------|---------|---------|
@@ -165,6 +215,9 @@ directory, so you don't edit the compose file itself.
    | `CONTAINER_NAME` | `oncall-guide` | Container name |
    | `HOST_PORT` | `8095` | Host port NPM/Cloudflare forwards to |
    | `CONTENT_DIR` | `/mnt/user/appdata/oncall-guide/content` | Host dir for extra topics |
+   | `DATA_DIR` | `/mnt/user/appdata/oncall-guide/data` | Login users + session key — **keep persistent** |
+   | `SESSION_SECRET` | *(blank)* | Session signing key; blank = generated and persisted to `DATA_DIR` |
+   | `SESSION_TTL_HOURS` | `12` | Session lifetime |
    | `ONCALL_DISABLE_SEEDS` | `false` | `true` = serve only mounted content |
    | `RESTART_POLICY` | `unless-stopped` | Docker restart policy |
 
@@ -173,9 +226,14 @@ directory, so you don't edit the compose file itself.
    `HOST_PORT` (plain HTTP).
 3. Point NGINX Proxy Manager at `<unraid-ip>:<HOST_PORT>` and expose it through
    your existing Cloudflare Tunnel. No TLS in-container — NPM/Cloudflare handle it.
-4. The volume mount (`CONTENT_DIR`) is **optional** — the image ships with the
-   seed topics. Use it to add/override topics without rebuilding: drop
-   `<id>.json` files there and restart the container.
+   (The Secure session cookie relies on the HTTPS that NPM/Cloudflare provide.)
+4. **Create your first login user** (no accounts exist until you do):
+   ```bash
+   docker exec -it oncall-guide python3 /app/manage-users.py add <username>
+   ```
+5. The **`DATA_DIR` volume** holds the users file + session key and **must be
+   persistent**. `CONTENT_DIR` is optional — the image ships with the seed
+   topics; use it to add/override topics without rebuilding, then restart.
 
 > `.env` is gitignored (it holds your server's config); `.env.example` is the
 > committed template. Keep both `docker-compose.yml` and `.env` together —
@@ -199,14 +257,19 @@ public/                      static site served by nginx
   js/validate.js             client-side schema validator (used by /ingest)
   js/ingest.js               /ingest page (validator, preview, prompts)
   vendor/minifuzz.js         vendored fuzzy search (no CDN)
-  sw.js                      service worker (offline)
+  sw.js                      service worker (offline; logout purges it)
+  login.html, login.js       login page (self-contained, public)
   app.webmanifest, icons/    PWA bits
+auth/server.py               session-auth service (nginx auth_request target)
+auth/entrypoint.sh           starts the auth service before nginx
 scripts/build-index.py       content scanner → manifest.json + web-root content
-scripts/dev.py               local dev server (index + SPA fallback)
+scripts/manage-users.py      CLI to add/change/remove login users (PBKDF2)
+scripts/dev.py               local dev server (unauthenticated; UI work only)
 Dockerfile                   nginx:alpine + python3, HEALTHCHECK, EXPOSE 80
 docker-entrypoint.sh         re-indexes /content at every container start
-nginx.conf                   SPA fallback, gzip, cache headers, /healthz
-docker-compose.yml           Unraid deployment (reads .env)
+nginx.conf                   auth_request gating, SPA fallback, gzip, /healthz
+nginx-security-headers.conf  CSP + hardening headers (included everywhere)
+docker-compose.yml           Unraid deployment (reads .env; content + data volumes)
 .env.example                 template for .env (copy → edit → deploy)
 .github/workflows/docker-publish.yml   push → GHCR image
 ```
