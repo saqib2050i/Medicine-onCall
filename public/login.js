@@ -16,10 +16,16 @@
     box.hidden = false;
   }
 
-  // Carry the originally requested path through login, sanitised to a same-site
+  // Post-login redirect target: an explicit ?next wins; otherwise, because the
+  // login page is now served in place at the requested URL, use the current
+  // path so a deep link returns you where you were. Sanitised to a same-site
   // path so it cannot become an open redirect.
-  var nxt = params.get('next') || '/';
-  if (!/^\/(?!\/)/.test(nxt)) nxt = '/';
+  var nxt = params.get('next');
+  if (!nxt) {
+    var p = location.pathname;
+    nxt = (p && p !== '/login') ? p + location.search : '/';
+  }
+  if (!/^\/(?![\/\\])/.test(nxt)) nxt = '/';   // same-site path only (blocks // and /\)
   document.getElementById('next').value = nxt;
 
   // On logout, purge the offline cache + service worker so previously viewed
