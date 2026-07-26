@@ -142,7 +142,7 @@ Or run the real container (with auth), creating a data volume and a first user:
 docker build -t oncall-guide .
 docker run -d --name oncall-guide -p 8095:80 -v oncall-data:/data oncall-guide
 docker exec -it oncall-guide python3 /app/manage-users.py add alice
-# then open http://localhost:8095 — you'll be redirected to /login
+# then open http://localhost:8095 — the login page is shown until you sign in
 ```
 
 ## Content schema

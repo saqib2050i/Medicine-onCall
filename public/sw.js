@@ -78,11 +78,12 @@ self.addEventListener('fetch', function (e) {
   }
 
   if (req.mode === 'navigate') {
-    // SPA shell, but only when the session is valid: if the shell request comes
-    // back unauthorised (401) or redirected to /login, don't cache it — fall
-    // back to any cached shell so the app can boot and route to login itself.
+    // SPA shell, but only when the session is valid. When logged out the origin
+    // serves the login page in place (marked with X-OnCall-Login) — show it, but
+    // never cache it as the app shell. On error, fall back to any cached shell.
     e.respondWith(
       fetch('/index.html').then(function (res) {
+        if (res.headers.get('X-OnCall-Login')) return res;   // logged out: login page, don't cache
         if (res.ok && !res.redirected) {
           var copy = res.clone();
           caches.open(CACHE).then(function (cache) { cache.put('/index.html', copy); });
