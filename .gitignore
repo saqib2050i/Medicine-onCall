@@ -12,3 +12,7 @@ Thumbs.db
 
 # Local Claude Code session config
 .claude/settings.local.json
+
+# Local environment overrides (keep .env.example tracked)
+.env
+.env.local

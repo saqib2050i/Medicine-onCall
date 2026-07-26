@@ -151,15 +151,35 @@ Change visibility.
 
 ## Deploying on Unraid
 
-1. Edit `docker-compose.yml`: replace `ghcr.io/<owner>/<repo>` with your image
-   path (lowercase), e.g. `ghcr.io/drawesome2050/medicine-oncall:latest`.
-2. Paste the compose file into Dockge / Unraid Compose Manager and deploy.
-   The site listens on port **8095** (plain HTTP).
-3. Point NGINX Proxy Manager at `<unraid-ip>:8095` and expose it through your
-   existing Cloudflare Tunnel. No TLS in-container — NPM/Cloudflare handle it.
-4. The volume mount (`/mnt/user/appdata/oncall-guide/content`) is **optional**
-   — the image ships with the seed topics. Use it to add/override topics
-   without rebuilding: drop `<id>.json` files there and restart the container.
+`docker-compose.yml` reads its settings from a `.env` file in the same
+directory, so you don't edit the compose file itself.
+
+1. Copy `.env.example` to `.env` and set at least `IMAGE` to your GHCR path
+   (lowercase), e.g. `IMAGE=ghcr.io/drawesome2050/medicine-oncall`. The other
+   values (`HOST_PORT`, `CONTENT_DIR`, `IMAGE_TAG`, …) have sensible defaults.
+
+   | Variable | Default | Purpose |
+   |----------|---------|---------|
+   | `IMAGE` | `ghcr.io/owner/repo` | Your GHCR image path (lowercase) |
+   | `IMAGE_TAG` | `latest` | `latest`, a git tag, or `sha-<short>` |
+   | `CONTAINER_NAME` | `oncall-guide` | Container name |
+   | `HOST_PORT` | `8095` | Host port NPM/Cloudflare forwards to |
+   | `CONTENT_DIR` | `/mnt/user/appdata/oncall-guide/content` | Host dir for extra topics |
+   | `ONCALL_DISABLE_SEEDS` | `false` | `true` = serve only mounted content |
+   | `RESTART_POLICY` | `unless-stopped` | Docker restart policy |
+
+2. Deploy with `docker compose up -d`, or paste both `docker-compose.yml` and
+   your `.env` into Dockge / Unraid Compose Manager. The site listens on
+   `HOST_PORT` (plain HTTP).
+3. Point NGINX Proxy Manager at `<unraid-ip>:<HOST_PORT>` and expose it through
+   your existing Cloudflare Tunnel. No TLS in-container — NPM/Cloudflare handle it.
+4. The volume mount (`CONTENT_DIR`) is **optional** — the image ships with the
+   seed topics. Use it to add/override topics without rebuilding: drop
+   `<id>.json` files there and restart the container.
+
+> `.env` is gitignored (it holds your server's config); `.env.example` is the
+> committed template. Keep both `docker-compose.yml` and `.env` together —
+> Compose only auto-loads `.env` from the directory you run it in.
 
 ### Updating
 
@@ -186,7 +206,8 @@ scripts/dev.py               local dev server (index + SPA fallback)
 Dockerfile                   nginx:alpine + python3, HEALTHCHECK, EXPOSE 80
 docker-entrypoint.sh         re-indexes /content at every container start
 nginx.conf                   SPA fallback, gzip, cache headers, /healthz
-docker-compose.yml           Unraid deployment
+docker-compose.yml           Unraid deployment (reads .env)
+.env.example                 template for .env (copy → edit → deploy)
 .github/workflows/docker-publish.yml   push → GHCR image
 ```
 
