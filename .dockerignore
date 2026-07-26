@@ -5,6 +5,9 @@
 README.md
 LICENSE
 docker-compose.yml
+.env
+.env.example
+.env.local
 public/manifest.json
 public/content/
 scripts/dev.py

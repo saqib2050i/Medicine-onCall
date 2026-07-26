@@ -1,28 +1,29 @@
-# Unraid / Dockge compose. Replace <owner>/<repo> with your GitHub
-# username/repository (lowercase), e.g. ghcr.io/drawesome2050/medicine-oncall.
+# Unraid / Dockge compose. Configuration comes from a .env file in this same
+# directory (copy .env.example to .env and edit). Docker Compose substitutes
+# ${VAR} values automatically; defaults after ":-" apply if a var is unset.
 services:
   oncall-guide:
-    image: ghcr.io/<owner>/<repo>:latest
-    container_name: oncall-guide
+    image: ${IMAGE:-ghcr.io/owner/repo}:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-oncall-guide}
     ports:
-      - "8095:80"                         # NGINX Proxy Manager / Cloudflare Tunnel point here
+      - "${HOST_PORT:-8095}:80"           # NGINX Proxy Manager / Cloudflare Tunnel point here
     environment:
       # Signing key for session cookies. Optional: if left blank, a random key
       # is generated and persisted to the data volume (so sessions still survive
-      # restarts). Set it explicitly to keep sessions stable if you ever move
-      # the volume or run more than one replica. Generate with:
-      #   openssl rand -base64 48
+      # restarts). Set it to keep sessions stable across volume moves/replicas.
+      # Generate with: openssl rand -base64 48
       - SESSION_SECRET=${SESSION_SECRET:-}
       - SESSION_TTL_HOURS=${SESSION_TTL_HOURS:-12}
+      # Set to "true" to serve ONLY mounted content (ignore the baked seeds).
       - ONCALL_DISABLE_SEEDS=${ONCALL_DISABLE_SEEDS:-false}
     volumes:
       # Optional — the image ships with seed content baked in. Drop extra
-      # topic JSON files here, then restart the container to index them.
-      - /mnt/user/appdata/oncall-guide/content:/content:rw
+      # topic JSON files in CONTENT_DIR, then restart the container to index them.
+      - ${CONTENT_DIR:-/mnt/user/appdata/oncall-guide/content}:/content:rw
       # Login users + the session signing key live here. KEEP THIS PERSISTENT
       # or everyone is logged out and all accounts are lost on redeploy.
-      - /mnt/user/appdata/oncall-guide/data:/data:rw
-    restart: unless-stopped
+      - ${DATA_DIR:-/mnt/user/appdata/oncall-guide/data}:/data:rw
+    restart: ${RESTART_POLICY:-unless-stopped}
 
 # First run — create your login user (no accounts exist until you do):
 #   docker exec -it oncall-guide python3 /app/manage-users.py add <username>

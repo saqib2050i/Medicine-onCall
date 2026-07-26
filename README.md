@@ -201,24 +201,43 @@ Change visibility.
 
 ## Deploying on Unraid
 
-1. Edit `docker-compose.yml`: replace `ghcr.io/<owner>/<repo>` with your image
-   path (lowercase), e.g. `ghcr.io/drawesome2050/medicine-oncall:latest`.
-2. Paste the compose file into Dockge / Unraid Compose Manager and deploy.
-   The site listens on port **8095** (plain HTTP).
-3. Point NGINX Proxy Manager at `<unraid-ip>:8095` and expose it through your
-   existing Cloudflare Tunnel. No TLS in-container — NPM/Cloudflare handle it.
+`docker-compose.yml` reads its settings from a `.env` file in the same
+directory, so you don't edit the compose file itself.
+
+1. Copy `.env.example` to `.env` and set at least `IMAGE` to your GHCR path
+   (lowercase), e.g. `IMAGE=ghcr.io/drawesome2050/medicine-oncall`. The other
+   values have sensible defaults.
+
+   | Variable | Default | Purpose |
+   |----------|---------|---------|
+   | `IMAGE` | `ghcr.io/owner/repo` | Your GHCR image path (lowercase) |
+   | `IMAGE_TAG` | `latest` | `latest`, a git tag, or `sha-<short>` |
+   | `CONTAINER_NAME` | `oncall-guide` | Container name |
+   | `HOST_PORT` | `8095` | Host port NPM/Cloudflare forwards to |
+   | `CONTENT_DIR` | `/mnt/user/appdata/oncall-guide/content` | Host dir for extra topics |
+   | `DATA_DIR` | `/mnt/user/appdata/oncall-guide/data` | Login users + session key — **keep persistent** |
+   | `SESSION_SECRET` | *(blank)* | Session signing key; blank = generated and persisted to `DATA_DIR` |
+   | `SESSION_TTL_HOURS` | `12` | Session lifetime |
+   | `ONCALL_DISABLE_SEEDS` | `false` | `true` = serve only mounted content |
+   | `RESTART_POLICY` | `unless-stopped` | Docker restart policy |
+
+2. Deploy with `docker compose up -d`, or paste both `docker-compose.yml` and
+   your `.env` into Dockge / Unraid Compose Manager. The site listens on
+   `HOST_PORT` (plain HTTP).
+3. Point NGINX Proxy Manager at `<unraid-ip>:<HOST_PORT>` and expose it through
+   your existing Cloudflare Tunnel. No TLS in-container — NPM/Cloudflare handle it.
    (The Secure session cookie relies on the HTTPS that NPM/Cloudflare provide.)
 4. **Create your first login user** (no accounts exist until you do):
    ```bash
    docker exec -it oncall-guide python3 /app/manage-users.py add <username>
    ```
-5. The **`/data` volume** (`/mnt/user/appdata/oncall-guide/data`) holds the
-   users file + session key and **must be persistent**. The **`/content`**
-   volume is optional — the image ships with the seed topics; use it to
-   add/override topics without rebuilding, then restart the container.
-6. Optional: set `SESSION_SECRET` (e.g. `openssl rand -base64 48`) in the
-   compose environment. If left blank, a key is generated and persisted to
-   `/data`, so sessions still survive restarts.
+5. The **`DATA_DIR` volume** holds the users file + session key and **must be
+   persistent**. `CONTENT_DIR` is optional — the image ships with the seed
+   topics; use it to add/override topics without rebuilding, then restart.
+
+> `.env` is gitignored (it holds your server's config); `.env.example` is the
+> committed template. Keep both `docker-compose.yml` and `.env` together —
+> Compose only auto-loads `.env` from the directory you run it in.
 
 ### Updating
 
@@ -250,7 +269,8 @@ Dockerfile                   nginx:alpine + python3, HEALTHCHECK, EXPOSE 80
 docker-entrypoint.sh         re-indexes /content at every container start
 nginx.conf                   auth_request gating, SPA fallback, gzip, /healthz
 nginx-security-headers.conf  CSP + hardening headers (included everywhere)
-docker-compose.yml           Unraid deployment (content + data volumes)
+docker-compose.yml           Unraid deployment (reads .env; content + data volumes)
+.env.example                 template for .env (copy → edit → deploy)
 .github/workflows/docker-publish.yml   push → GHCR image
 ```
 
