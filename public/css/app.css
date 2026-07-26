@@ -104,6 +104,7 @@ kbd.kbd {
 .icon-btn:hover { background: var(--surface-2); }
 .burger { display: inline-flex; flex-direction: column; gap: 4px; }
 .burger span { width: 18px; height: 2px; background: currentColor; border-radius: 2px; }
+.logout-form { display: inline-flex; margin: 0; }
 .search-trigger {
   margin-left: auto;
   display: inline-flex; align-items: center; gap: 0.45rem;

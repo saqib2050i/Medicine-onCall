@@ -3,7 +3,7 @@
  * keep working offline while fresh content wins when online. */
 'use strict';
 
-var CACHE = 'oncall-v1';
+var CACHE = 'oncall-v2';
 var SHELL = [
   '/',
   '/index.html',
@@ -70,13 +70,25 @@ self.addEventListener('fetch', function (e) {
   var url = new URL(req.url);
   if (url.origin !== location.origin) return;
 
+  // Never intercept the public auth surface — let it hit the network directly
+  // so login, logout and the auth check always reflect real session state.
+  if (url.pathname === '/login' || url.pathname === '/login.js' ||
+      url.pathname.indexOf('/auth/') === 0) {
+    return;
+  }
+
   if (req.mode === 'navigate') {
-    // SPA: always serve the shell; fall back to cache offline.
+    // SPA shell, but only when the session is valid: if the shell request comes
+    // back unauthorised (401) or redirected to /login, don't cache it — fall
+    // back to any cached shell so the app can boot and route to login itself.
     e.respondWith(
       fetch('/index.html').then(function (res) {
-        var copy = res.clone();
-        caches.open(CACHE).then(function (cache) { cache.put('/index.html', copy); });
-        return res;
+        if (res.ok && !res.redirected) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (cache) { cache.put('/index.html', copy); });
+          return res;
+        }
+        return caches.match('/index.html').then(function (hit) { return hit || res; });
       }).catch(function () {
         return caches.match('/index.html');
       })

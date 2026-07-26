@@ -8,7 +8,8 @@
   <meta name="theme-color" content="#0e7c7b">
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icons/icon.svg">
-  <link rel="manifest" href="/app.webmanifest">
+  <!-- use-credentials so the (auth-gated) manifest request sends the session cookie -->
+  <link rel="manifest" href="/app.webmanifest" crossorigin="use-credentials">
   <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
@@ -28,6 +29,14 @@
       <span aria-hidden="true">&#128269;</span><span class="search-trigger-label">Search</span><kbd class="kbd">&#8984;K</kbd>
     </button>
     <button type="button" id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode" aria-pressed="false">&#9789;</button>
+    <form class="logout-form" method="POST" action="/auth/logout">
+      <button type="submit" id="logout-btn" class="icon-btn" aria-label="Sign out" title="Sign out">
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </form>
   </header>
 
   <nav id="nav-drawer" class="nav-drawer" aria-label="Topic navigation"></nav>

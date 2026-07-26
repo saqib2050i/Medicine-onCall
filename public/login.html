@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sign in — OnCall</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0e7c7b">
+  <!-- Self-contained: no external assets, so this page needs no authenticated
+       resources. All styling is inline. -->
+  <style>
+    :root {
+      --bg: #f4f6f7; --surface: #ffffff; --text: #16232b; --muted: #51646f;
+      --line: #d5dde1; --accent: #0e7c7b; --accent-contrast: #ffffff;
+      --danger: #c0392b; --danger-bg: #fbeae7;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #10181f; --surface: #19232c; --text: #e6edf1; --muted: #93a6b1;
+        --line: #2c3a46; --accent: #35b5b0; --accent-contrast: #08211f;
+        --danger: #ff7a68; --danger-bg: #3a1f1c;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; font-family: var(--font);
+      background: var(--bg); color: var(--text);
+      display: flex; align-items: center; justify-content: center; padding: 1.25rem;
+    }
+    .card {
+      width: 100%; max-width: 22rem; background: var(--surface);
+      border: 1px solid var(--line); border-radius: 14px; padding: 1.75rem 1.5rem;
+      box-shadow: 0 1px 3px rgba(15,30,40,.10), 0 8px 30px rgba(15,30,40,.08);
+    }
+    .brand { display: flex; align-items: center; gap: .5rem; color: var(--accent);
+      font-weight: 700; font-size: 1.2rem; margin-bottom: .35rem; }
+    .brand svg { width: 24px; height: 24px; }
+    .sub { color: var(--muted); font-size: .9rem; margin: 0 0 1.25rem; }
+    label { display: block; font-size: .85rem; font-weight: 600; margin: .9rem 0 .3rem; }
+    input {
+      width: 100%; font: inherit; font-size: 1rem; color: var(--text);
+      background: var(--bg); border: 1px solid var(--line); border-radius: 9px;
+      padding: .65rem .75rem;
+    }
+    input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+    button {
+      width: 100%; margin-top: 1.25rem; font: inherit; font-weight: 700; font-size: 1rem;
+      color: var(--accent-contrast); background: var(--accent); border: none;
+      border-radius: 9px; padding: .7rem; cursor: pointer; min-height: 2.9rem;
+    }
+    button:hover { filter: brightness(1.05); }
+    .error {
+      background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger);
+      border-radius: 9px; padding: .6rem .75rem; font-size: .88rem; margin-bottom: 1rem;
+    }
+    .foot { margin-top: 1.4rem; color: var(--muted); font-size: .72rem; line-height: 1.5; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M2 12h4l2.5-6 3.5 12 3-8 1.5 2H22" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      OnCall
+    </div>
+    <p class="sub">Sign in to access the emergency guidelines.</p>
+
+    <div id="error" class="error" role="alert" hidden></div>
+
+    <form method="POST" action="/auth/login" autocomplete="on">
+      <input type="hidden" name="next" id="next" value="/">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" autocomplete="username"
+             autocapitalize="off" autocorrect="off" spellcheck="false" required autofocus>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Sign in</button>
+    </form>
+
+    <p class="foot">Authorised users only. This is a decision-support / educational
+      aid, not a substitute for clinical judgement or local policy.</p>
+  </main>
+
+  <script src="/login.js"></script>
+</body>
+</html>

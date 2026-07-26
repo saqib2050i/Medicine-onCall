@@ -6,6 +6,14 @@ public/content/
 .DS_Store
 Thumbs.db
 
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Local environment overrides
+.env
+.env.local
+
 # Editor
 .vscode/
 .idea/
