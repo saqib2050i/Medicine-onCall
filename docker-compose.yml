@@ -14,6 +14,10 @@ services:
       # Generate with: openssl rand -base64 48
       - SESSION_SECRET=${SESSION_SECRET:-}
       - SESSION_TTL_HOURS=${SESSION_TTL_HOURS:-12}
+      # Seed the first login user on first start (created only if missing, so
+      # restarts never reset it). Leave blank to create users manually instead.
+      - ONCALL_ADMIN_USER=${ONCALL_ADMIN_USER:-}
+      - ONCALL_ADMIN_PASSWORD=${ONCALL_ADMIN_PASSWORD:-}
       # Set to "true" to serve ONLY mounted content (ignore the baked seeds).
       - ONCALL_DISABLE_SEEDS=${ONCALL_DISABLE_SEEDS:-false}
     volumes:
