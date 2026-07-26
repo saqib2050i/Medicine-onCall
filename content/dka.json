@@ -1,0 +1,47 @@
+{
+  "id": "dka",
+  "title": "Diabetic Ketoacidosis (DKA)",
+  "category": "Endocrine & Diabetes",
+  "subcategory": "Diabetes emergencies",
+  "tags": ["emergency", "diabetes", "insulin", "fluids", "potassium", "vbg"],
+  "severity": "high",
+  "summary": "Ketonaemia ≥3.0 mmol/L + glucose >11 mmol/L (or known diabetes) + pH <7.3 or bicarbonate <15 — fixed-rate insulin and fluids on a structured pathway.",
+  "lastUpdated": "2026-07-25",
+  "sources": [
+    { "label": "JBDS-IP — Management of DKA in adults (via ABCD)", "url": "https://abcd.care/joint-british-diabetes-societies-jbds-inpatient-care-group" },
+    { "label": "NICE NG17 — Type 1 diabetes in adults (DKA section)", "url": "https://www.nice.org.uk/guidance/ng17" }
+  ],
+  "blocks": [
+    { "type": "callout", "variant": "red-flag", "title": "Severe DKA — involve critical care if", "body": "pH <7.1, bicarbonate <5 mmol/L, ketones >6 mmol/L, K⁺ <3.5 on admission, GCS <12, SpO₂ <92% on air, SBP <90, pulse >100 or <60, or anion gap >16 with deteriorating trend." },
+    { "type": "table", "headers": ["Diagnostic criterion", "Threshold"], "rows": [
+      ["Capillary/blood ketones", "≥ 3.0 mmol/L (or urine ketones ≥ 2+)"],
+      ["Blood glucose", "> 11.0 mmol/L or known diabetes"],
+      ["Venous pH / bicarbonate", "pH < 7.3 and/or HCO₃⁻ < 15.0 mmol/L"]
+    ] },
+    { "type": "heading", "text": "Immediate assessment" },
+    { "type": "bullets", "items": [
+      "ABCDE; VBG (pH, K⁺, glucose), capillary ketones, U&E, FBC, cultures if infection suspected, ECG",
+      "Look for the precipitant: infection, missed insulin, first presentation, MI, pregnancy, SGLT2 inhibitor (may be euglycaemic)",
+      "Weigh or estimate weight for insulin rate",
+      "Continue the patient's usual long-acting basal insulin"
+    ] },
+    { "type": "flowsheet", "title": "First hours of management (adapt to local DKA pathway)", "steps": [
+      { "step": "Fluid resuscitation", "detail": "0.9% sodium chloride 1 L IV over 1 h (faster 500 mL bolus over 10–15 min if SBP <90, then reassess). Typical continuation: 1 L over 2 h ×2, then 1 L over 4 h ×2 — verify against local policy and adjust for age/heart failure.", "branch": "SBP <90 despite 2 boluses → senior + critical care review" },
+      { "step": "Fixed-rate IV insulin infusion", "detail": "Soluble insulin 0.1 units/kg/hour IV (e.g. 50 units in 50 mL 0.9% saline). Do not bolus. Aim: ketones falling ≥0.5 mmol/L/h, bicarbonate rising ≥3 mmol/L/h, glucose falling ≥3 mmol/L/h — verify against local policy.", "branch": "Targets not met → check infusion/access, then increase rate per pathway" },
+      { "step": "Potassium replacement", "detail": "Add KCl to the second and subsequent fluid bags per the potassium table below. Check K⁺ on VBG at 1 h, 2 h, then 2-hourly — verify against local policy.", "branch": "K⁺ <3.5 → senior review; insulin may need to be held per local pathway" },
+      { "step": "When glucose < 14 mmol/L", "detail": "Add 10% glucose 125 mL/h alongside saline; continue fixed-rate insulin until ketones <0.6, pH >7.3 (do not stop insulin just because glucose normalises).", "branch": null },
+      { "step": "Resolution and handover", "detail": "When resolved AND eating/drinking: give fast-acting subcutaneous insulin with a meal and stop the infusion 30–60 min after. Involve the diabetes team, address the precipitant, review before discharge.", "branch": null }
+    ] },
+    { "type": "table", "headers": ["Serum K⁺ (mmol/L)", "KCl in each litre of fluid"], "rows": [
+      ["> 5.5", "None — recheck in 2 h"],
+      ["3.5 – 5.5", "40 mmol/L"],
+      ["< 3.5", "Senior review — needs higher-rate replacement, usually with cardiac monitoring"]
+    ] },
+    { "type": "callout", "variant": "warning", "title": "Watch for", "body": "Hypokalaemia and hypoglycaemia are the commonest iatrogenic harms. Cerebral oedema (especially in young adults) — new headache, irritability, falling GCS — is an emergency. Beware euglycaemic DKA with SGLT2 inhibitors: ketones and pH matter more than the glucose." },
+    { "type": "education", "title": "Why fixed-rate insulin?", "body": "The goal in DKA is to switch off ketogenesis, not merely to lower glucose. A weight-based fixed rate reliably suppresses lipolysis and hepatic ketone production; glucose is then kept up with 10% dextrose so insulin can continue until the ketoacidosis — the actual disease — has resolved." },
+    { "type": "references", "items": [
+      { "label": "JBDS inpatient care group guidelines (DKA)", "url": "https://abcd.care/joint-british-diabetes-societies-jbds-inpatient-care-group" },
+      { "label": "NICE NG17 type 1 diabetes in adults", "url": "https://www.nice.org.uk/guidance/ng17" }
+    ] }
+  ]
+}

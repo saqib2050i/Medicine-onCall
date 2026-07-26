@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>OnCall — Emergency Guidelines</title>
+  <meta name="description" content="On-call emergency guideline reference for the medical registrar. Decision-support / educational aid only.">
+  <meta name="theme-color" content="#0e7c7b">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/icon.svg">
+  <link rel="manifest" href="/app.webmanifest">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#view">Skip to content</a>
+
+  <header class="app-header">
+    <button type="button" id="nav-toggle" class="icon-btn" aria-label="Browse topics" aria-expanded="false" aria-controls="nav-drawer">
+      <span class="burger" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <a class="brand" data-link href="/" aria-label="OnCall home">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true" width="22" height="22">
+        <path d="M2 12h4l2.5-6 3.5 12 3-8 1.5 2H22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">OnCall</span>
+    </a>
+    <button type="button" id="search-trigger" class="search-trigger" aria-label="Search (Ctrl or Cmd K)">
+      <span aria-hidden="true">&#128269;</span><span class="search-trigger-label">Search</span><kbd class="kbd">&#8984;K</kbd>
+    </button>
+    <button type="button" id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode" aria-pressed="false">&#9789;</button>
+  </header>
+
+  <nav id="nav-drawer" class="nav-drawer" aria-label="Topic navigation"></nav>
+  <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+
+  <main id="view" class="view" tabindex="-1"></main>
+
+  <footer class="app-footer">
+    <p class="footer-disclaimer"><strong>Decision-support / educational aid only.</strong>
+      This site is not a substitute for clinical judgement, senior advice, or local policy.
+      Verify all doses, thresholds and steps against current local and national guidelines before use.</p>
+    <p class="footer-links"><a data-link href="/ingest">Add content</a></p>
+  </footer>
+
+  <div id="palette" class="palette-overlay" hidden role="dialog" aria-modal="true" aria-label="Search topics">
+    <div class="palette-box">
+      <input id="palette-input" class="palette-input" type="text" role="combobox"
+             aria-expanded="true" aria-controls="palette-results" aria-autocomplete="list"
+             autocomplete="off" autocapitalize="off" spellcheck="false"
+             placeholder="Search topics, tags, drugs&hellip;">
+      <ul id="palette-results" class="palette-results" role="listbox" aria-label="Search results"></ul>
+      <div class="palette-help" aria-hidden="true"><kbd class="kbd">&uarr;&darr;</kbd> navigate <kbd class="kbd">&crarr;</kbd> open <kbd class="kbd">esc</kbd> close</div>
+    </div>
+  </div>
+
+  <script src="/vendor/minifuzz.js" defer></script>
+  <script src="/js/validate.js" defer></script>
+  <script src="/js/render.js" defer></script>
+  <script src="/js/ingest.js" defer></script>
+  <script src="/js/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Unraid / Dockge compose. Replace <owner>/<repo> with your GitHub
+# username/repository (lowercase), e.g. ghcr.io/drawesome2050/medicine-oncall.
+services:
+  oncall-guide:
+    image: ghcr.io/<owner>/<repo>:latest
+    container_name: oncall-guide
+    ports:
+      - "8095:80"                         # NGINX Proxy Manager / Cloudflare Tunnel point here
+    volumes:
+      # Optional — the image ships with seed content baked in. Drop extra
+      # topic JSON files here, then restart the container to index them.
+      - /mnt/user/appdata/oncall-guide/content:/content:rw
+    restart: unless-stopped

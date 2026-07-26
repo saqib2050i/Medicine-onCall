@@ -1,0 +1,195 @@
+# OnCall — Emergency Guideline Reference
+
+A fast, mobile-first, self-extending reference site for handling on-call medical
+emergencies as a medical registrar. **Adding a topic = dropping one JSON file
+into `content/`** — navigation, search, the homepage and the category tree are
+all generated from the content, so the site grows with zero code changes.
+
+Ships as a small `nginx:alpine` Docker image published to GHCR by GitHub
+Actions, designed to run on Unraid behind NGINX Proxy Manager + a Cloudflare
+Tunnel (plain HTTP port, no in-container TLS).
+
+> **Clinical disclaimer** — this site is a decision-support / educational aid
+> only. It is **not** a substitute for clinical judgement, senior advice, or
+> local policy. Verify all doses, thresholds and steps against current local
+> and national guidelines before use. Seed content is a structural template to
+> be reviewed and corrected by a clinician.
+
+---
+
+## How it works
+
+```
+content/*.json              one file per topic (the only thing you ever edit)
+        │
+        ▼
+scripts/build-index.py      scans + validates content, writes:
+        │                     public/manifest.json   (metadata + search text)
+        │                     public/content/*.json  (validated topic files)
+        ▼
+public/                     static app (vanilla JS) fetches manifest.json,
+                            builds nav/search/homepage, renders topic pages
+```
+
+The index script runs **twice**:
+
+1. **At image build** — seed content is baked in, so the image works standalone.
+2. **At every container start** (via `/docker-entrypoint.d/`) — it merges the
+   baked seeds with anything mounted at `/content` (mounted files with the same
+   filename win) and regenerates the manifest. So: drop a JSON on the Unraid
+   volume → restart the container → new topic is live. No rebuild.
+
+Set `ONCALL_DISABLE_SEEDS=true` on the container to serve *only* mounted content.
+
+## Features
+
+- **Mobile-first** clinical UI, big tap targets, light + dark mode, offline
+  support via a service worker (previously viewed topics keep working).
+- **Search** — vendored fuzzy search (`public/vendor/minifuzz.js`, no CDN)
+  over title / tags / summary / body, with a **Cmd/Ctrl-K** command palette
+  (arrow keys + Enter; `/` also opens it).
+- **Severity colour-coding** (`high` / `medium` / `low`) across nav, cards,
+  badges and the topic header, plus a high-acuity quick-access row on the home
+  page.
+- **Ten block types**: `heading`, `paragraph`, `bullets`, `numbered`,
+  `callout` (red-flag / warning / pearl / info), `flowsheet`, `table`,
+  `education`, `references`, `html` (escape hatch). Unknown types render as a
+  collapsed raw-JSON fallback — never a crash.
+- **`/ingest` page** — the workflow for adding content: paste JSON → live
+  validation with specific errors → live preview → download a correctly named
+  file, plus two copy-able Claude prompts that produce schema-compatible JSON.
+- **Print stylesheet** — the Print button on a topic produces a clean
+  single-topic flow sheet.
+
+## Local development
+
+Requires only Python 3 (standard library):
+
+```bash
+python3 scripts/dev.py 8080
+```
+
+This rebuilds the index from `content/` and serves `public/` at
+`http://localhost:8080` with the same SPA fallback nginx uses.
+
+Or run the real container:
+
+```bash
+docker build -t oncall-guide .
+docker run --rm -p 8095:80 oncall-guide
+```
+
+## Content schema
+
+One file per topic in `content/`, filename = its `id`
+(`content/hyperkalaemia.json`):
+
+```json
+{
+  "id": "hyperkalaemia",
+  "title": "Hyperkalaemia",
+  "category": "Metabolic & Electrolytes",
+  "subcategory": "Potassium",
+  "tags": ["emergency", "renal"],
+  "severity": "high",
+  "summary": "One line: what it is / when to act.",
+  "lastUpdated": "2026-07-25",
+  "sources": [{ "label": "Guideline name", "url": "https://..." }],
+  "blocks": [
+    { "type": "callout", "variant": "red-flag", "title": "Call for help if", "body": "..." },
+    { "type": "heading", "text": "Immediate assessment" },
+    { "type": "bullets", "items": ["ABCDE", "12-lead ECG now"] },
+    { "type": "numbered", "items": ["Step one", "Step two"] },
+    { "type": "flowsheet", "title": "Management algorithm", "steps": [
+      { "step": "Protect the myocardium", "detail": "Drug/dose/route", "branch": "If X → do Y" }
+    ] },
+    { "type": "table", "headers": ["Severity", "K⁺"], "rows": [["Mild", "5.5–5.9"]] },
+    { "type": "education", "title": "Why calcium first?", "body": "Short teaching paragraph." },
+    { "type": "references", "items": [{ "label": "Name", "url": "https://..." }] },
+    { "type": "html", "html": "<svg>…</svg> escape hatch for custom flow charts" }
+  ]
+}
+```
+
+Rules enforced by the validator (`/ingest` and the build script agree):
+
+- Required: `id` (lowercase-hyphen slug), `title`, `category`, `severity`
+  (`high|medium|low`), `summary`, non-empty `blocks`.
+- Recommended: `subcategory`, `tags`, `lastUpdated` (YYYY-MM-DD), `sources`.
+- Invalid files are **skipped with a warning** at index time — one bad file
+  never takes the site down. Unknown block types degrade gracefully.
+- `manifest.json` is always generated — never hand-edit it (it's gitignored).
+
+## Adding a topic
+
+1. Open **`/ingest`** on the site and copy one of the two example prompts
+   (Prompt A: simple topic; Prompt B: complex topic with flowsheet + table).
+2. Give it to Claude with your topic filled in; paste the returned JSON back
+   into the `/ingest` validator; fix anything it flags; check the live
+   preview; click **Download .json** (named from the `id`).
+3. Deploy it either way:
+   - **Via git:** put the file in `content/`, commit, push to `main`. CI
+     rebuilds the image; on the server run
+     `docker compose pull && docker compose up -d`.
+   - **Via the volume:** drop the file into
+     `/mnt/user/appdata/oncall-guide/content/` on Unraid and restart the
+     container.
+4. **Review the rendered topic clinically before relying on it.**
+
+## CI / GHCR image
+
+`.github/workflows/docker-publish.yml` builds on every push to `main` (and on
+`v*` tags) and pushes to `ghcr.io/<owner>/<repo>` with tags `latest`,
+`sha-<short-sha>`, and the git tag when present. It uses the built-in
+`GITHUB_TOKEN` (`packages: write`) — **no secrets to configure**. Target
+platform is `linux/amd64` (Unraid); an arm64 line is commented in the workflow.
+
+First push: the GHCR package may default to *private*. Either keep it private
+(then `docker login ghcr.io` on the server with a read-only PAT) or make it
+public: GitHub → your profile → Packages → the package → Package settings →
+Change visibility.
+
+## Deploying on Unraid
+
+1. Edit `docker-compose.yml`: replace `ghcr.io/<owner>/<repo>` with your image
+   path (lowercase), e.g. `ghcr.io/drawesome2050/medicine-oncall:latest`.
+2. Paste the compose file into Dockge / Unraid Compose Manager and deploy.
+   The site listens on port **8095** (plain HTTP).
+3. Point NGINX Proxy Manager at `<unraid-ip>:8095` and expose it through your
+   existing Cloudflare Tunnel. No TLS in-container — NPM/Cloudflare handle it.
+4. The volume mount (`/mnt/user/appdata/oncall-guide/content`) is **optional**
+   — the image ships with the seed topics. Use it to add/override topics
+   without rebuilding: drop `<id>.json` files there and restart the container.
+
+### Updating
+
+- **New image** (code or committed content changed): push to `main`, wait for
+  the Action, then on the server: `docker compose pull && docker compose up -d`.
+- **Volume content only**: restart the container
+  (`docker restart oncall-guide`) — the entrypoint re-indexes on every start.
+
+## Repository layout
+
+```
+content/                     topic JSON files (the data)
+public/                      static site served by nginx
+  css/app.css                all styling incl. dark mode + print
+  js/app.js                  router, views, nav tree, command palette
+  js/render.js               block renderers (all ten types + fallback)
+  js/validate.js             client-side schema validator (used by /ingest)
+  js/ingest.js               /ingest page (validator, preview, prompts)
+  vendor/minifuzz.js         vendored fuzzy search (no CDN)
+  sw.js                      service worker (offline)
+  app.webmanifest, icons/    PWA bits
+scripts/build-index.py       content scanner → manifest.json + web-root content
+scripts/dev.py               local dev server (index + SPA fallback)
+Dockerfile                   nginx:alpine + python3, HEALTHCHECK, EXPOSE 80
+docker-entrypoint.sh         re-indexes /content at every container start
+nginx.conf                   SPA fallback, gzip, cache headers, /healthz
+docker-compose.yml           Unraid deployment
+.github/workflows/docker-publish.yml   push → GHCR image
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE), which also carries the clinical content notice.

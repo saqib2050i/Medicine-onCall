@@ -1,0 +1,46 @@
+{
+  "id": "neutropenic-sepsis",
+  "title": "Neutropenic Sepsis",
+  "category": "Infection & Sepsis",
+  "subcategory": "Immunocompromised",
+  "tags": ["emergency", "oncology", "chemotherapy", "antibiotics", "sepsis-six"],
+  "severity": "high",
+  "summary": "Suspected infection in a patient at risk of neutropenia (e.g. chemotherapy within 6 weeks) — empiric IV antibiotics within 1 hour; do not wait for the neutrophil count.",
+  "lastUpdated": "2026-07-25",
+  "sources": [
+    { "label": "NICE CG151 — Neutropenic sepsis: prevention and management", "url": "https://www.nice.org.uk/guidance/cg151" },
+    { "label": "NICE NG51 — Sepsis: recognition, diagnosis and early management", "url": "https://www.nice.org.uk/guidance/ng51" }
+  ],
+  "blocks": [
+    { "type": "callout", "variant": "red-flag", "title": "Treat as neutropenic sepsis if", "body": "Anticancer treatment (usually within the last 6 weeks) AND temperature ≥38 °C or any signs/symptoms of significant sepsis — even if afebrile. Give empiric antibiotics FIRST; never wait for the FBC result." },
+    { "type": "heading", "text": "Immediate assessment" },
+    { "type": "bullets", "items": [
+      "ABCDE; full set of observations and early warning score",
+      "Ask about chemotherapy regimen, last cycle date, indwelling lines (PICC/Hickman), recent transfusions and prophylaxis",
+      "Examine for a source, including line sites, perineum (no PR examination in neutropenia), mouth, skin, chest, urine",
+      "Bloods: FBC, U&E, LFT, CRP, lactate, coagulation; blood cultures (peripheral AND from each lumen of any central line) before antibiotics if this causes no delay",
+      "Cultures/swabs from any suspicious site; CXR if respiratory features"
+    ] },
+    { "type": "numbered", "items": [
+      "Give high-flow oxygen if needed to keep SpO₂ in target range",
+      "Take blood cultures (do not delay antibiotics beyond 1 hour)",
+      "Give empiric IV broad-spectrum antibiotics per local policy — commonly piperacillin/tazobactam 4.5 g IV (check allergy status; verify choice and dose against local policy)",
+      "Start IV fluid resuscitation if hypotensive or lactate raised",
+      "Check serial lactate",
+      "Monitor urine output; consider catheter if shocked"
+    ] },
+    { "type": "table", "headers": ["Parameter", "Concerning threshold", "Action"], "rows": [
+      ["Time to antibiotics", "> 1 hour from arrival/recognition", "Escalate — this is a breach; give immediately"],
+      ["Systolic BP", "< 90 mmHg or drop > 40 from baseline", "Fluid bolus, senior review, consider critical care"],
+      ["Lactate", "> 2 mmol/L (>4 = severe)", "Aggressive resuscitation, critical care review"],
+      ["Neutrophils (when available)", "< 0.5 × 10⁹/L", "Confirms neutropenia — continue pathway, involve oncology/haematology"]
+    ] },
+    { "type": "callout", "variant": "pearl", "title": "Pearl", "body": "Neutropenic patients may not mount fever, pus, or an impressive CRP. A chemotherapy patient who 'just feels awful', is hypothermic, or has unexplained hypotension deserves the same 1-hour pathway as the febrile one." },
+    { "type": "education", "title": "Why the 1-hour target?", "body": "In neutropenia the usual host barriers to bacteraemia are absent, so gram-negative sepsis can progress to shock over hours. Empiric anti-pseudomonal cover given within the first hour is the single intervention most consistently associated with reduced mortality, which is why the antibiotic decision is made on risk (recent chemotherapy + illness), not on a confirmed neutrophil count." },
+    { "type": "references", "items": [
+      { "label": "NICE CG151 neutropenic sepsis", "url": "https://www.nice.org.uk/guidance/cg151" },
+      { "label": "NICE NG51 sepsis", "url": "https://www.nice.org.uk/guidance/ng51" },
+      { "label": "UK Sepsis Trust clinical tools", "url": "https://sepsistrust.org/professional-resources/clinical-tools/" }
+    ] }
+  ]
+}

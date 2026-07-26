@@ -1,0 +1,13 @@
+{
+  "name": "OnCall — Emergency Guidelines",
+  "short_name": "OnCall",
+  "description": "On-call emergency guideline reference for the medical registrar. Decision-support / educational aid only.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#10181f",
+  "theme_color": "#0e7c7b",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

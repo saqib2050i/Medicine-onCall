@@ -1,0 +1,37 @@
+{
+  "id": "status-epilepticus",
+  "title": "Status Epilepticus (Convulsive)",
+  "category": "Neurology",
+  "subcategory": "Seizures",
+  "tags": ["emergency", "seizure", "benzodiazepine", "levetiracetam", "airway"],
+  "severity": "high",
+  "summary": "Convulsive seizure ≥5 min, or recurrent seizures without recovery — benzodiazepine now, escalate on a timed pathway.",
+  "lastUpdated": "2026-07-25",
+  "sources": [
+    { "label": "NICE NG217 — Epilepsies in children, young people and adults", "url": "https://www.nice.org.uk/guidance/ng217" },
+    { "label": "Resuscitation Council UK — 2021 Guidelines", "url": "https://www.resus.org.uk/library/2021-resuscitation-guidelines" }
+  ],
+  "blocks": [
+    { "type": "callout", "variant": "red-flag", "title": "Escalate immediately if", "body": "Seizure continues after two benzodiazepine doses, airway compromise, hypoxia despite oxygen, suspected eclampsia (give magnesium — call obstetrics), or first presentation with fever/meningism." },
+    { "type": "heading", "text": "First 5 minutes" },
+    { "type": "bullets", "items": [
+      "Start a clock; protect from injury; do not restrain or put anything in the mouth",
+      "Airway adjunct if tolerated, recovery position when practical, high-flow oxygen",
+      "Check capillary glucose immediately — treat hypoglycaemia (e.g. IV glucose per local policy)",
+      "IV access; bloods incl. glucose, U&E, Ca²⁺, Mg²⁺, FBC, anticonvulsant levels if on treatment",
+      "Ask: known epilepsy? alcohol? pregnancy? head injury? sepsis? drug overdose?"
+    ] },
+    { "type": "flowsheet", "title": "Timed treatment pathway (adults)", "steps": [
+      { "step": "0–5 min — supportive care", "detail": "ABC, oxygen, glucose check, monitoring. Many seizures self-terminate before 5 min.", "branch": null },
+      { "step": "5 min — first-line benzodiazepine", "detail": "Lorazepam 4 mg slow IV. No IV access: midazolam 10 mg buccal, or diazepam 10 mg rectal — verify against local policy.", "branch": "If alcohol excess suspected give IV thiamine (Pabrinex) alongside; if eclampsia possible give magnesium sulfate" },
+      { "step": "10–15 min — second benzodiazepine dose", "detail": "If still seizing 5–10 min after the first dose: repeat lorazepam 4 mg IV once. Call for senior/anaesthetic support now.", "branch": null },
+      { "step": "15–25 min — second-line anticonvulsant", "detail": "Established status: levetiracetam 60 mg/kg (max 4.5 g) IV, OR phenytoin 20 mg/kg IV with cardiac monitoring, OR sodium valproate 40 mg/kg (max 3 g) IV — choice per local policy and patient factors (avoid valproate in pregnancy/childbearing potential).", "branch": "Already on one of these agents → prefer an alternative second-line drug" },
+      { "step": "25–45 min — refractory status", "detail": "Anaesthetic induction and intubation (e.g. thiopental/propofol per anaesthetist), transfer to ICU, continuous EEG where available. Treat the cause.", "branch": null }
+    ] },
+    { "type": "callout", "variant": "pearl", "title": "Pearl", "body": "After the motor activity stops, ongoing coma may be non-convulsive status. If the patient does not begin to wake within 20–30 min of seizure termination, seek EEG and neurology advice." },
+    { "type": "education", "title": "Why the strict clock?", "body": "GABA-receptor internalisation begins within minutes of continuous seizure activity, so benzodiazepines lose effectiveness the longer the seizure runs, while excitotoxic neuronal injury and systemic complications accumulate. A timed, pre-planned escalation prevents the common failure mode: repeated small benzodiazepine doses given late." },
+    { "type": "references", "items": [
+      { "label": "NICE NG217 epilepsies (status epilepticus recommendations)", "url": "https://www.nice.org.uk/guidance/ng217" }
+    ] }
+  ]
+}

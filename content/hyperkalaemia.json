@@ -1,0 +1,43 @@
+{
+  "id": "hyperkalaemia",
+  "title": "Hyperkalaemia",
+  "category": "Metabolic & Electrolytes",
+  "subcategory": "Potassium",
+  "tags": ["emergency", "renal", "ecg", "insulin-dextrose", "calcium-gluconate"],
+  "severity": "high",
+  "summary": "Serum K⁺ ≥6.0 mmol/L or any ECG changes — treat urgently to prevent arrhythmia and cardiac arrest.",
+  "lastUpdated": "2026-07-25",
+  "sources": [
+    { "label": "UK Kidney Association — Treatment of Acute Hyperkalaemia in Adults", "url": "https://ukkidney.org/health-professionals/guidelines/treatment-acute-hyperkalaemia-adults" },
+    { "label": "Resuscitation Council UK — 2021 Guidelines (special circumstances)", "url": "https://www.resus.org.uk/library/2021-resuscitation-guidelines" }
+  ],
+  "blocks": [
+    { "type": "callout", "variant": "red-flag", "title": "Call for senior help / critical care if", "body": "K⁺ ≥6.5 mmol/L, any hyperkalaemic ECG change, haemodynamic compromise, or refractory hyperkalaemia despite treatment. Peri-arrest → follow ALS and get help now." },
+    { "type": "heading", "text": "Immediate assessment" },
+    { "type": "bullets", "items": [
+      "ABCDE approach; attach continuous cardiac monitoring",
+      "12-lead ECG now — tall tented T waves, flattened P waves, broad QRS, sine wave",
+      "IV access; VBG for rapid K⁺ plus formal U&E to confirm (exclude pseudohyperkalaemia if well and no ECG changes)",
+      "Review drug chart: stop ACE-i/ARB, K⁺-sparing diuretics, NSAIDs, trimethoprim, K⁺ supplements",
+      "Look for the cause: AKI/CKD, rhabdomyolysis, tissue lysis, adrenal insufficiency, acidosis"
+    ] },
+    { "type": "flowsheet", "title": "Management algorithm (K⁺ ≥6.5 or ECG changes)", "steps": [
+      { "step": "Protect the myocardium", "detail": "IV calcium gluconate 10% 10 mL over 5–10 min via large vein if ECG changes; repeat ECG and repeat dose every 10 min if changes persist (up to ~50 mL) — verify against local policy.", "branch": "No ECG changes and K⁺ <6.5 → calcium may not be needed; move to shifting therapy" },
+      { "step": "Shift K⁺ into cells — insulin/dextrose", "detail": "Soluble insulin 10 units in 25 g glucose IV over 15–30 min (e.g. 250 mL 10% glucose). Monitor capillary glucose at baseline, then regularly for at least 6 h (risk of late hypoglycaemia) — verify against local policy.", "branch": null },
+      { "step": "Shift K⁺ into cells — salbutamol", "detail": "Nebulised salbutamol 10–20 mg as adjunct (caution in tachyarrhythmia/ischaemic heart disease) — verify against local policy.", "branch": null },
+      { "step": "Remove K⁺ from the body", "detail": "Treat the cause. Consider potassium binder (e.g. sodium zirconium cyclosilicate per local formulary), fluids if volume-deplete, and specialist input. Stop culprit drugs.", "branch": "Refractory K⁺ ≥6.5, oligo-anuric AKI, or ECG changes persisting → discuss urgently with renal/critical care for dialysis" },
+      { "step": "Monitor and recheck", "detail": "Repeat K⁺ at 1–2 h after treatment, then at 4–6 h; insulin/dextrose effect is temporary — expect rebound if cause untreated.", "branch": null }
+    ] },
+    { "type": "table", "headers": ["Severity", "K⁺ (mmol/L)", "Action"], "rows": [
+      ["Mild", "5.5–5.9", "Treat cause, review drugs, recheck"],
+      ["Moderate", "6.0–6.4", "As mild + shift therapy if ECG changes or rising"],
+      ["Severe", "≥6.5 (or any ECG change)", "Full emergency treatment as per algorithm"]
+    ] },
+    { "type": "callout", "variant": "pearl", "title": "Pearl", "body": "Calcium does not lower K⁺ — it stabilises the myocardium and buys you time. Insulin/dextrose and salbutamol only shift K⁺ temporarily; definitive management is removing potassium and treating the cause." },
+    { "type": "education", "title": "Why calcium first?", "body": "Hyperkalaemia raises the resting membrane potential of cardiac myocytes, narrowing the gap to threshold and predisposing to arrhythmia. Calcium restores the electrical gradient across the membrane, reducing excitability within minutes, without changing serum K⁺. That is why any ECG change mandates calcium before (or alongside) shifting therapy." },
+    { "type": "references", "items": [
+      { "label": "UK Kidney Association acute hyperkalaemia guideline", "url": "https://ukkidney.org/health-professionals/guidelines/treatment-acute-hyperkalaemia-adults" },
+      { "label": "Resuscitation Council UK 2021 guidelines", "url": "https://www.resus.org.uk/library/2021-resuscitation-guidelines" }
+    ] }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "anaphylaxis",
+  "title": "Anaphylaxis",
+  "category": "Resuscitation & Allergy",
+  "tags": ["emergency", "adrenaline", "airway", "allergy", "abcde"],
+  "severity": "high",
+  "summary": "Sudden airway/breathing/circulation compromise with likely allergen exposure — give IM adrenaline without delay.",
+  "lastUpdated": "2026-07-25",
+  "sources": [
+    { "label": "Resuscitation Council UK — Emergency treatment of anaphylaxis", "url": "https://www.resus.org.uk/library/additional-guidance/guidance-anaphylaxis/emergency-treatment" }
+  ],
+  "blocks": [
+    { "type": "callout", "variant": "red-flag", "title": "Diagnose anaphylaxis when", "body": "Sudden onset and rapid progression of Airway and/or Breathing and/or Circulation problems, usually with skin/mucosal changes (flushing, urticaria, angioedema). Skin changes alone are NOT anaphylaxis." },
+    { "type": "heading", "text": "Immediate actions" },
+    { "type": "numbered", "items": [
+      "Call for help early — resuscitation team if A/B/C compromise",
+      "Remove the trigger if possible (stop drug infusion, remove stinger)",
+      "Lie patient flat (legs raised if hypotensive); sitting up may help isolated breathing difficulty. Do NOT stand the patient up",
+      "Give IM adrenaline (see algorithm) — do not delay for IV access or monitoring",
+      "High-flow oxygen; attach monitoring (SpO₂, ECG, BP) as soon as available"
+    ] },
+    { "type": "flowsheet", "title": "Anaphylaxis algorithm (adults)", "steps": [
+      { "step": "IM adrenaline", "detail": "Adrenaline 500 micrograms IM (0.5 mL of 1 mg/mL / 1:1000) into anterolateral mid-thigh — verify against local policy.", "branch": null },
+      { "step": "Reassess at 5 minutes", "detail": "If no improvement in A/B/C problems, repeat IM adrenaline 500 micrograms. Repeat every 5 min as needed.", "branch": "Improving → continue monitoring; period of observation (biphasic reactions occur)" },
+      { "step": "IV fluid bolus", "detail": "IV crystalloid bolus 500–1000 mL for shock/poor response; reassess and repeat as needed — verify against local policy.", "branch": null },
+      { "step": "Refractory anaphylaxis", "detail": "No improvement despite 2 appropriate doses of IM adrenaline → follow refractory algorithm: get expert help, start low-dose IV adrenaline infusion (critical care/experienced clinician only), continue fluids.", "branch": "Cardiac arrest → start CPR and follow ALS" },
+      { "step": "After stabilisation", "detail": "Observe for biphasic reaction (length per local policy and risk). Consider non-sedating oral antihistamine and steroids for persisting skin symptoms only — they are NOT first-line treatment. Take timed serum mast cell tryptase samples. Refer to allergy services; prescribe adrenaline auto-injector and educate before discharge.", "branch": null }
+    ] },
+    { "type": "callout", "variant": "warning", "title": "Common pitfalls", "body": "IV bolus adrenaline is hazardous outside cardiac arrest and should only ever be given by specialists via infusion. Antihistamines and steroids are not substitutes for adrenaline. Beware sudden standing/sitting up — it can precipitate cardiac arrest (empty ventricle syndrome)." },
+    { "type": "education", "title": "Why IM and why the thigh?", "body": "IM adrenaline into the vastus lateralis achieves rapid, reliable absorption with a wide safety margin. Its α₁ effects reverse vasodilation and mucosal oedema while β effects bronchodilate and stabilise mast cells. The 5-minute reassess-and-repeat cycle exists because absorption and clinical response vary — many patients need more than one dose." },
+    { "type": "references", "items": [
+      { "label": "Resuscitation Council UK anaphylaxis guidance and algorithm", "url": "https://www.resus.org.uk/library/additional-guidance/guidance-anaphylaxis/emergency-treatment" },
+      { "label": "Resuscitation Council UK 2021 guidelines", "url": "https://www.resus.org.uk/library/2021-resuscitation-guidelines" }
+    ] }
+  ]
+}

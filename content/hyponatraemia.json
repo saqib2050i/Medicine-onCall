@@ -1,0 +1,36 @@
+{
+  "id": "hyponatraemia",
+  "title": "Hyponatraemia",
+  "category": "Metabolic & Electrolytes",
+  "subcategory": "Sodium",
+  "tags": ["electrolytes", "siadh", "hypertonic-saline", "fluid-status"],
+  "severity": "medium",
+  "summary": "Na⁺ <135 mmol/L — the urgency is set by symptoms and speed of onset, not the number alone; severe symptoms need hypertonic saline with senior support.",
+  "lastUpdated": "2026-07-25",
+  "sources": [
+    { "label": "European Clinical Practice Guideline on Hyponatraemia (2014)", "url": "https://doi.org/10.1530/EJE-13-1020" },
+    { "label": "NICE CKS — Hyponatraemia", "url": "https://cks.nice.org.uk/topics/hyponatraemia/" }
+  ],
+  "blocks": [
+    { "type": "callout", "variant": "red-flag", "title": "Severe symptoms — treat as an emergency", "body": "Vomiting, seizures, reduced GCS, cardiorespiratory distress with Na⁺ <130: this needs hypertonic saline (e.g. 150 mL 2.7–3% NaCl IV over 20 min, repeated per response) — senior/critical care involvement, HDU-level monitoring, verify against local policy." },
+    { "type": "heading", "text": "Structured assessment" },
+    { "type": "numbered", "items": [
+      "Confirm true hypotonic hyponatraemia: check serum osmolality; exclude hyperglycaemia (corrected Na⁺) and lab artefact",
+      "Grade symptoms: severe (seizures, GCS↓, vomiting) vs moderate (nausea, confusion, headache) vs mild/absent",
+      "Establish tempo: acute (<48 h, e.g. post-op, polydipsia, MDMA) vs chronic/unknown (assume chronic)",
+      "Assess volume status clinically: hypovolaemic, euvolaemic, or hypervolaemic",
+      "Paired tests BEFORE fluids where possible: serum osmolality, urine osmolality, urine sodium; review drugs (thiazides, SSRIs, PPIs, carbamazepine) and consider adrenal/thyroid screen"
+    ] },
+    { "type": "table", "headers": ["Pattern", "Typical findings", "Usual first step"], "rows": [
+      ["Hypovolaemic", "Clinical volume depletion, urine Na⁺ often <30 (renal losses give >30)", "0.9% saline; recheck Na⁺ frequently"],
+      ["Euvolaemic (often SIADH)", "Urine osmolality >100, urine Na⁺ >30, no oedema; exclude adrenal insufficiency and hypothyroidism", "Fluid restriction; find and treat the cause"],
+      ["Hypervolaemic", "Oedema — heart failure, cirrhosis, nephrotic syndrome", "Fluid restriction; treat underlying disease"]
+    ] },
+    { "type": "callout", "variant": "warning", "title": "Correction limits", "body": "In chronic hyponatraemia aim for a rise of no more than ~8–10 mmol/L in the first 24 h (lower if high risk of osmotic demyelination: alcohol excess, malnutrition, hypokalaemia, liver disease). Overcorrection → involve seniors early; relowering with glucose 5% ± desmopressin is a specialist decision." },
+    { "type": "education", "title": "Why speed of onset matters", "body": "Brain cells adapt to chronic hypotonicity by exporting osmolytes over ~48 hours. Correcting chronic hyponatraemia faster than the brain can re-accumulate them risks osmotic demyelination syndrome, whereas genuinely acute hyponatraemia carries the opposite danger — cerebral oedema — and justifies prompt, controlled hypertonic saline when symptomatic." },
+    { "type": "references", "items": [
+      { "label": "European hyponatraemia guideline (Eur J Endocrinol 2014)", "url": "https://doi.org/10.1530/EJE-13-1020" },
+      { "label": "NICE CKS hyponatraemia", "url": "https://cks.nice.org.uk/topics/hyponatraemia/" }
+    ] }
+  ]
+}

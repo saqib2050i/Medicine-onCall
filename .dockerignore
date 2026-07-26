@@ -1,0 +1,11 @@
+.git
+.github
+.claude
+.gitignore
+README.md
+LICENSE
+docker-compose.yml
+public/manifest.json
+public/content/
+scripts/dev.py
+.DS_Store
