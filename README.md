@@ -72,9 +72,12 @@ client-side JS would be bypassable; this is not.)
 - **Passwords** are stored only as PBKDF2-HMAC-SHA256 hashes (600k iterations,
   per-user salt) in `/data/users.json` — never plaintext, never in the image.
   Manage them with `scripts/manage-users.py` (see below).
-- **Sessions** are HMAC-SHA256-signed tokens in an HttpOnly + Secure +
-  SameSite=Lax cookie with an expiry (`SESSION_TTL_HOURS`, default 12). Stateless,
-  so no session store; a forged/tampered cookie fails the signature check.
+- **Sessions** are HMAC-SHA256-signed tokens in an HttpOnly, SameSite=Lax cookie
+  with an expiry (`SESSION_TTL_HOURS`, default 12). Stateless, so no session
+  store; a forged/tampered cookie fails the signature check. The `Secure` flag
+  is set automatically when the request arrived over HTTPS (via the tunnel/proxy
+  `X-Forwarded-Proto`), so login works over the HTTPS tunnel *and* over plain-HTTP
+  LAN access; override with `COOKIE_SECURE=always|never` if needed.
 - **Login is rate-limited** per username and per client IP (lockout after
   repeated failures), with constant-time comparisons and generic error text.
 - **Logout** clears the cookie *and* purges the offline cache + service worker,
