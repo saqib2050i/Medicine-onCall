@@ -49,6 +49,11 @@ TTL_SECONDS = int(float(os.environ.get("SESSION_TTL_HOURS", "12")) * 3600)
 PORT = int(os.environ.get("AUTH_PORT", "8081"))
 MAX_ATTEMPTS = int(os.environ.get("LOGIN_MAX_ATTEMPTS", "8"))
 WINDOW_SEC = int(os.environ.get("LOGIN_WINDOW_SEC", "300"))
+# Whether the session cookie carries the Secure flag. "auto" (default) sets it
+# only when the request arrived over HTTPS (per X-Forwarded-Proto) — so login
+# works both over the HTTPS tunnel AND over plain-HTTP LAN access. "always"
+# forces it (HTTPS-only deployments); "never" disables it.
+COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "auto").strip().lower()
 
 _lock = threading.Lock()
 _attempts = {}  # key -> [timestamps of recent failures]
@@ -210,17 +215,30 @@ class Handler(BaseHTTPRequestHandler):
         if body:
             self.wfile.write(body)
 
+    def _is_https(self):
+        proto = self.headers.get("X-Forwarded-Proto", "").split(",")[0].strip().lower()
+        return proto == "https"
+
     def _set_cookie(self, token, max_age):
-        # Secure: browser reaches us over HTTPS via NPM/Cloudflare even though
-        # nginx<->app is plain HTTP. SameSite=Lax allows normal navigation.
+        # A browser will not STORE a Secure cookie over plain HTTP, which would
+        # make login loop on LAN (http://<ip>:8095). So set Secure only when the
+        # request actually came over HTTPS (via the tunnel/proxy), unless
+        # COOKIE_SECURE overrides. SameSite=Lax allows normal navigation.
+        if COOKIE_SECURE == "always":
+            secure = True
+        elif COOKIE_SECURE == "never":
+            secure = False
+        else:
+            secure = self._is_https()
         attrs = [
             "%s=%s" % (COOKIE_NAME, token),
             "Path=/",
             "HttpOnly",
-            "Secure",
             "SameSite=Lax",
             "Max-Age=%d" % max_age,
         ]
+        if secure:
+            attrs.append("Secure")
         return ("Set-Cookie", "; ".join(attrs))
 
     # -- routes -----------------------------------------------------------
